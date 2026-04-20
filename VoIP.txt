@@ -1,0 +1,102 @@
+>configure ip
+>router(config)#ip dhcp excluded address 192.168.1.1
+>router(config)#ip dhcp pool lan1
+>router(dhcp-config)#network 192.168.1.0 255.255.255.0
+>router(dhcp-config)#defaut-router 192.168.1.1
+
+configure rip
+
+in interface config, ip helper-address <middle router ip>
+
+Middle(config)# access-list 1 permit 192.168.1.0 0.0.0.255
+Middle(config)# access-list 1 permit 192.168.3.0 0.0.0.255
+
+help:
+show run
+show ip dhcp binding
+show ip interface brief
+
+-----------------------------------------------
+
+Router 3 
+
+ 
+
+Router3>enable 
+
+Router3#configure terminal 
+
+Router3(config)#interface FastEthernet0/0 
+
+Router3(config-if)#ip address 10.0.0.1 255.0.0.0 
+
+Router3(config-if)#no shutdown 
+
+Router3(config-if)#exit 
+
+Router3(config)# 
+
+Router3(config)#interface FastEthernet0/1 
+
+Router3(config-if)#ip address 30.0.0.1 255.0.0.0 
+
+Router3(config-if)#no shutdown 
+
+Router3(config-if)#exit 
+
+Router3(config)#router rip 
+
+Router3(config-router)#network 10.0.0.0 
+
+Router3(config-router)#network 30.0.0.0 
+
+
+DHCP configuration 
+
+Router3(config)#ip dhcp pool VOICE1  
+
+Router3(dhcp-config)#network 10.0.0.0 255.0.0.0  
+
+Router3(dhcp-config)#default-router 10.0.0.1  
+
+Router3(dhcp-config)#option 150 ip 10.0.0.1  
+
+Router4(config)#ip dhcp pool VOICE2  
+
+Router4(dhcp-config)#network 20.0.0.0 255.0.0.0  
+
+Router4(dhcp-config)#default-router 20.0.0.1  
+
+Router4(dhcp-config)#option 150 ip 20.0.0.1  
+
+Configure a voice Vlan on Switch 1 and 2 
+
+Switch1(config)#interface range fa0/1 – 5  
+
+Switch1(config-if-range)#switchport mode access 
+
+Switch1(config-if-range)#switchport voice vlan 1  
+
+ 
+
+Switch2(config)#interface range fa0/1 – 5  
+
+Switch2(config-if-range)#switchport mode access 
+
+Switch2(config-if-range)#switchport voice vlan 1  
+
+Configure the telephony service on Router3 and Router4 
+
+Router3(config)#dial-peer voice 1 voip 
+
+Router3(config-dial-peer)# destination-pattern [0-9][0-9][0-9][0-9]  # To represent IP Phone number 0001 or 0002 
+
+Router3(config-dial-peer)# session target ipv4:30.0.0.2 
+
+ 
+
+Router4(config)#dial-peer voice 1 voip 
+
+Router4(config-dial-peer)# destination-pattern [0-9][0-9][0-9][0-9]  # To represent IP Phone number 0001 or 0002 
+
+Router4(config-dial-peer)# session target ipv4:30.0.0.1 
